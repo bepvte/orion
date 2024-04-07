@@ -36,26 +36,12 @@ jobs:
         DEVELOPER_DIR=/Applications/Xcode_12.4.app/Contents/Developer make clean package FINALPACKAGE=1
         DEVELOPER_DIR=/Applications/Xcode_12.4.app/Contents/Developer make clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
         DEVELOPER_DIR=/Applications/Xcode_11.7.app/Contents/Developer make clean package FINALPACKAGE=1
-        cd packages
-        zip -yr9 Orion_${{ steps.setup.outputs.version }}.zip *
-        cd ..
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release
+      uses: softprops/action-gh-release@v2
       with:
+        files: ${{ github.workspace }}/orion/packages/*
         tag_name: ${{ github.ref }}
-        release_name: ${{ steps.setup.outputs.version }}
+        name: ${{ steps.setup.outputs.version }}
         body: ''
         draft: true
         prerelease: false
-    - name: Upload Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/orion/packages/Orion_${{ steps.setup.outputs.version }}.zip
-        asset_name: Orion_${{ steps.setup.outputs.version }}.zip
-        asset_content_type: application/zip
